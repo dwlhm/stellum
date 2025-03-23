@@ -1,3 +1,5 @@
+// src/app.tsx
+
 import React from "react";
 import { Routes } from "./libs/route/routes";
 import { Outlet } from "./libs/route/outlet";

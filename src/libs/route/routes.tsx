@@ -1,3 +1,5 @@
+// src/libs/routes/routes.tsx
+
 import { RouteConfigType, RoutesDataType } from "./types";
 import { getLayout } from "./layout";
 
