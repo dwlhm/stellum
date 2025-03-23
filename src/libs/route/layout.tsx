@@ -9,8 +9,17 @@ export const getLayout = () => {
   if (path === "" || !path) {
     path = "/";
   }
-  
-  if (!config[path]) {
+
+  if (!config[path] && config[":"] && config[":"].params) {
+    if (!data.currentParam) data.currentParam = {};
+    data.currentParam = {
+      ...data.currentConfig,
+      ...(config[":"].params(path) as any),
+    };
+    path = ":";
+  }
+
+  if (!config[path] && !config[":"]) {
     return <h1>Not Found</h1>;
   }
   data.position += 1;

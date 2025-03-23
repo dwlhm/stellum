@@ -3,6 +3,8 @@
 import React from "react";
 import { Routes } from "./libs/route/routes";
 import { Outlet } from "./libs/route/outlet";
+import About from "./pages/about";
+import Name from "./pages/name";
 
 const config = {
   "/": {
@@ -40,6 +42,20 @@ const config = {
                 ),
               },
             },
+          },
+        },
+      },
+      ":": {
+        layout: <About />,
+        params: (param: string) => ({
+          id: Number(param),
+        }),
+        child: {
+          ":": {
+            layout: <Name />,
+            params: (param: string) => ({
+              name: param,
+            }),
           },
         },
       },
