@@ -1,42 +1,70 @@
-import { ReactNode, useMemo } from "react";
+import {
+  ReactNode,
+  useMemo,
+  Suspense,
+  isValidElement,
+  useCallback,
+} from "react";
 import { RouteConfig } from "./types";
 
 interface RenderContext {
   routeSegments: string[];
   currentDepth: number;
+  params: Record<string, string>;
 }
+
+// Helper untuk cek lazy component
+const isLazyComponent = (component: any): boolean => {
+  return (
+    typeof component?.$$typeof === "symbol" &&
+    component.$$typeof.toString() === "Symbol(react.lazy)"
+  );
+};
 
 export const renderLayout = (
   config: RouteConfig,
-  { routeSegments, currentDepth }: RenderContext
+  { routeSegments, currentDepth, params }: RenderContext
 ): ReactNode => {
   const currentSegment = routeSegments[currentDepth + 1] ?? "";
-  
+
   const getChildLayout = (): ReactNode => {
     if (!config.child || !currentSegment) {
       return null;
     }
 
     const childConfig = config.child[currentSegment] ?? config.child["*"];
-    
+
     if (!childConfig) {
       return config.notfound ?? <div>Not Found</div>;
     }
 
-    return renderLayout(childConfig, {
+    const layout = renderLayout(childConfig, {
       routeSegments,
-      currentDepth: currentDepth + 1
+      currentDepth: currentDepth + 1,
+      params: childConfig.name
+      ? { ...params, [childConfig.name]: currentSegment }
+      : params,
     });
+
+    // Cek apakah layout mengandung lazy component
+    if (isLazyComponent(childConfig.layout)) {
+      return (
+        <Suspense fallback={childConfig?.loading ?? <div>Loading...</div>}>
+          {layout}
+        </Suspense>
+      );
+    }
+
+    return layout;
   };
 
-  // Memoize child layout
-  const MemoizedOutlet = useMemo(() => {
+  const MemoizedOutlet = useCallback(() => {
     const childLayout = getChildLayout();
-    return () => childLayout;
-  }, [routeSegments, currentDepth]); // Dependencies yang benar-benar mempengaruhi routing
+    return childLayout;
+  }, [routeSegments, currentDepth]);
 
   return config.layout({
     Outlet: MemoizedOutlet,
-    param: config.name ? { [config.name]: routeSegments[currentDepth] } : {}
+    param: params,
   });
 };

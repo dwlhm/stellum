@@ -1,9 +1,11 @@
 // src/app.tsx
 
 import React, { useMemo } from "react";
-import About from "./pages/about";
-import { useRouter } from "./libs/routing/useRoute";
+// import About from "./pages/about";
+import { createRouter } from "./libs/routing/useRoute";
 import { Config } from "./libs/routing/types";
+
+const About = React.lazy(() => import("./pages/about"));
 
 export default function App({ path }: { path: string }) {
   const config: Config = {
@@ -15,11 +17,7 @@ export default function App({ path }: { path: string }) {
         error: <h1>Error</h1>,
       },
       about: {
-        layout: (props) =>
-          useMemo(
-            () => <About Outlet={props.Outlet} param={props.param} />,
-            [props.Outlet, props.param]
-          ),
+        layout: (props) => <About Outlet={props.Outlet} param={props.param} />,
         notfound: <h1>Not Found</h1>,
         default: <h1>Default</h1>,
         error: <h1>Error</h1>,
@@ -38,11 +36,26 @@ export default function App({ path }: { path: string }) {
             name: "user",
             child: {
               logout: {
-                layout: () => <h1>Logout</h1>,
+                layout: (props) => <h1>Logout: {JSON.stringify(props.param)}</h1>,
                 notfound: <h1>Not Found</h1>,
                 default: <h1>Default</h1>,
                 error: <h1>Error</h1>,
               },
+              "*": {
+                layout: (props) => <h1>Account kedua: {JSON.stringify(props.param)}</h1>,
+                notfound: <h1>Not Found</h1>,
+                default: <h1>Default</h1>,
+                error: <h1>Error</h1>,
+                name: "account",
+                child: {
+                  settings: {
+                    layout: () => <h1>Settings</h1>,
+                    notfound: <h1>Not Found</h1>,
+                    default: <h1>Default</h1>,
+                    error: <h1>Error</h1>,
+                  },
+                },
+              }
             },
           },
         },
@@ -53,7 +66,7 @@ export default function App({ path }: { path: string }) {
     error: <h1>Error</h1>,
   };
 
-  const Route = useRouter(config, path);
+  const Route = createRouter(config, path);
 
   return (
     <html>
