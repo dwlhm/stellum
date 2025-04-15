@@ -1,28 +1,42 @@
-import { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 import { RouteConfig } from "./types";
+
+interface RenderContext {
+  routeSegments: string[];
+  currentDepth: number;
+}
 
 export const renderLayout = (
   config: RouteConfig,
-  path: string[],
-  position: number
+  { routeSegments, currentDepth }: RenderContext
 ): ReactNode => {
-  const childPath = path[position + 1] || "";
-  console.log("childPath", childPath, path[position], config);
-  let childLayout: ReactNode = <></>;
-  if (config.child && childPath !== "") {
-    if (config.child[childPath] === undefined && !config.child["*"]) {
-      childLayout = config.notfound;
-    } else {
-      childLayout = renderLayout(
-        config.child[childPath] || config.child["*"],
-        path,
-        position + 1
-      );
+  const currentSegment = routeSegments[currentDepth + 1] ?? "";
+  
+  const getChildLayout = (): ReactNode => {
+    if (!config.child || !currentSegment) {
+      return null;
     }
-  }
+
+    const childConfig = config.child[currentSegment] ?? config.child["*"];
+    
+    if (!childConfig) {
+      return config.notfound ?? <div>Not Found</div>;
+    }
+
+    return renderLayout(childConfig, {
+      routeSegments,
+      currentDepth: currentDepth + 1
+    });
+  };
+
+  // Memoize child layout
+  const MemoizedOutlet = useMemo(() => {
+    const childLayout = getChildLayout();
+    return () => childLayout;
+  }, [routeSegments, currentDepth]); // Dependencies yang benar-benar mempengaruhi routing
 
   return config.layout({
-    Outlet: () => childLayout,
-    param: { [config.name || ""]: path[position] },
+    Outlet: MemoizedOutlet,
+    param: config.name ? { [config.name]: routeSegments[currentDepth] } : {}
   });
 };

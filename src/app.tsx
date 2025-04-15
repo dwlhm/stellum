@@ -1,8 +1,8 @@
 // src/app.tsx
 
-import React from "react";
+import React, { useMemo } from "react";
 import About from "./pages/about";
-import { useRoute } from "./libs/routing/useRoute";
+import { useRouter } from "./libs/routing/useRoute";
 import { Config } from "./libs/routing/types";
 
 export default function App({ path }: { path: string }) {
@@ -15,7 +15,11 @@ export default function App({ path }: { path: string }) {
         error: <h1>Error</h1>,
       },
       about: {
-        layout: (props) => <About Outlet={props.Outlet} param={props.param} />,
+        layout: (props) =>
+          useMemo(
+            () => <About Outlet={props.Outlet} param={props.param} />,
+            [props.Outlet, props.param]
+          ),
         notfound: <h1>Not Found</h1>,
         default: <h1>Default</h1>,
         error: <h1>Error</h1>,
@@ -49,7 +53,7 @@ export default function App({ path }: { path: string }) {
     error: <h1>Error</h1>,
   };
 
-  const { Route } = useRoute(config, path);
+  const Route = useRouter(config, path);
 
   return (
     <html>

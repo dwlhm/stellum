@@ -1,17 +1,47 @@
-import { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 import { Config } from "./types";
 import { renderLayout } from "./renderer";
 
-export const useRoute = (initialConfig: Config, currentPath: string) => {
-  let splitPath = currentPath.split("/");
-  if (splitPath[0] === "") splitPath = ["/"];
+const normalizePathSegments = (path: string): string[] => {
+  const segments = path.split('/').filter(Boolean);
+  return segments.length ? segments : ['/'];
+};
 
-  return {
-    Route: (): ReactNode => {
-      return (
-        renderLayout(initialConfig.route[splitPath[0]], splitPath, 0) ||
-        initialConfig.notfound
-      );
-    },
-  };
+// Component yang stabil
+const RouteRenderer = ({ 
+  config, 
+  segments 
+}: { 
+  config: Config, 
+  segments: string[] 
+}) => {
+  console.log('dicall lagi', segments);
+  const rootRoute = config.route[segments[0]];
+  
+  if (!rootRoute) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn(`No route found for path: ${segments[0]}`);
+    }
+    return config.notfound;
+  }
+
+  try {
+    return renderLayout(rootRoute, {
+      routeSegments: segments,
+      currentDepth: 0
+    });
+  } catch (error) {
+    console.error('Route rendering failed:', error);
+    return config.notfound;
+  }
+};
+
+export const useRouter = (config: Config, path: string) => {
+  // Memoize path segments
+  const segments = useMemo(() => normalizePathSegments(path), [path]);
+  
+  // Memoize component dengan dependencies yang stabil
+  return useMemo(() => {
+    return () => <RouteRenderer config={config} segments={segments} />;
+  }, [config, segments]);
 };
