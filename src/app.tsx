@@ -6,8 +6,6 @@ import { Config } from "./libs/routing/types";
 import { Link } from "./libs/routing/link";
 import { RouterProvider } from "./libs/routing/context";
 
-const About = React.lazy(() => import("./pages/about"));
-
 export default function App({ path }: { path: string }) {
   const config: Config = {
     route: {
@@ -19,14 +17,10 @@ export default function App({ path }: { path: string }) {
           </div>
         ),
         notfound: <h1>Not Found</h1>,
-        default: <h1>Default</h1>,
-        error: <h1>Error</h1>,
       },
       about: {
         layout: React.lazy(() => import("./pages/about")),
         notfound: <h1>Not Found</h1>,
-        default: <h1>Default</h1>,
-        error: <h1>Error</h1>,
         child: {
           "*": {
             layout: ({ Outlet, param }) => (
@@ -37,8 +31,6 @@ export default function App({ path }: { path: string }) {
               </div>
             ),
             notfound: <h1>Not Found</h1>,
-            default: <h1>Default</h1>,
-            error: <h1>Error</h1>,
             name: "user",
             child: {
               logout: {
@@ -46,23 +38,17 @@ export default function App({ path }: { path: string }) {
                   <h1>Logout: {JSON.stringify(props.param)}</h1>
                 ),
                 notfound: <h1>Not Found</h1>,
-                default: <h1>Default</h1>,
-                error: <h1>Error</h1>,
               },
               "*": {
                 layout: (props) => (
                   <h1>Account kedua: {JSON.stringify(props.param)}</h1>
                 ),
                 notfound: <h1>Not Found</h1>,
-                default: <h1>Default</h1>,
-                error: <h1>Error</h1>,
                 name: "account",
                 child: {
                   settings: {
                     layout: () => <h1>Settings</h1>,
                     notfound: <h1>Not Found</h1>,
-                    default: <h1>Default</h1>,
-                    error: <h1>Error</h1>,
                   },
                 },
               },
@@ -72,8 +58,6 @@ export default function App({ path }: { path: string }) {
       },
     },
     notfound: <h1>Not Found</h1>,
-    default: <h1>Default</h1>,
-    error: <h1>Error</h1>,
   };
 
   const Route = createRouter(config, path);
