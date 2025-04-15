@@ -7,6 +7,10 @@ import { renderToReadableStream } from "react-dom/server";
 await Bun.build({
   entrypoints: ["./src/client.tsx"],
   outdir: "./public",
+  sourcemap: "inline",
+  splitting: true,
+  target: "browser",
+  format: "esm"
 });
 
 const app = new Elysia()
@@ -18,11 +22,14 @@ const app = new Elysia()
     const app = createElement(App, { path: req.params["*"] });
 
     const stream = await renderToReadableStream(app, {
-      bootstrapScripts: ["/public/client.js"],
+      bootstrapScripts: [],
+      bootstrapModules: ['/public/client.js']
     });
 
     return new Response(stream, {
-      headers: { "Content-Type": "text/html" },
+      headers: { 
+        "Content-Type": "text/html",
+      },
     });
   })
   .listen(3000);

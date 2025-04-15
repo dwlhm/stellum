@@ -1,8 +1,8 @@
 import { ReactNode, useState } from "react";
+import { Link } from "../libs/routing/link";
 
 export default function About({
   Outlet,
-  param,
 }: {
   Outlet: () => ReactNode;
   param?: Record<string, string>;
@@ -10,7 +10,9 @@ export default function About({
   return (
     <div>
       <p>Hai</p>
-      <p>{JSON.stringify(param)}</p>
+      <Link to="/">Homea</Link>
+      <Link to="/about/dwlhm">About me</Link>
+      <Link to="/about/dwlhm/logout">Logout</Link>
       <Counter />
       <Outlet />
     </div>

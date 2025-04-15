@@ -1,16 +1,18 @@
-import { ReactNode, useMemo } from "react";
+import { ReactNode } from "react";
 import { Config } from "./types";
 import { renderLayout } from "./renderer";
+import { useRouter } from "./context";
 
 const normalizePathSegments = (path: string): string[] => {
   const segments = path.split("/").filter(Boolean);
   return segments.length ? segments : ["/"];
 };
 
-export const createRouter = (config: Config, path: string) => {
-  const segments = useMemo(() => normalizePathSegments(path), [path]);
-
+export const createRouter = (config: Config, initialPath: string) => {
   const RouteComponent = (): ReactNode => {
+    const { path } = useRouter();
+    const segments = normalizePathSegments(path);
+    
     const rootRoute = config.route[segments[0]];
 
     if (!rootRoute) {

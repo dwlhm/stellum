@@ -1,9 +1,10 @@
 // src/app.tsx
 
-import React, { useMemo } from "react";
-// import About from "./pages/about";
+import React from "react";
 import { createRouter } from "./libs/routing/useRoute";
 import { Config } from "./libs/routing/types";
+import { Link } from "./libs/routing/link";
+import { RouterProvider } from "./libs/routing/context";
 
 const About = React.lazy(() => import("./pages/about"));
 
@@ -11,13 +12,18 @@ export default function App({ path }: { path: string }) {
   const config: Config = {
     route: {
       "/": {
-        layout: () => <h1>Home</h1>,
+        layout: () => (
+          <div>
+            <h1>Home</h1>
+            <Link to="/about">About</Link>
+          </div>
+        ),
         notfound: <h1>Not Found</h1>,
         default: <h1>Default</h1>,
         error: <h1>Error</h1>,
       },
       about: {
-        layout: (props) => <About Outlet={props.Outlet} param={props.param} />,
+        layout: React.lazy(() => import("./pages/about")),
         notfound: <h1>Not Found</h1>,
         default: <h1>Default</h1>,
         error: <h1>Error</h1>,
@@ -36,13 +42,17 @@ export default function App({ path }: { path: string }) {
             name: "user",
             child: {
               logout: {
-                layout: (props) => <h1>Logout: {JSON.stringify(props.param)}</h1>,
+                layout: (props) => (
+                  <h1>Logout: {JSON.stringify(props.param)}</h1>
+                ),
                 notfound: <h1>Not Found</h1>,
                 default: <h1>Default</h1>,
                 error: <h1>Error</h1>,
               },
               "*": {
-                layout: (props) => <h1>Account kedua: {JSON.stringify(props.param)}</h1>,
+                layout: (props) => (
+                  <h1>Account kedua: {JSON.stringify(props.param)}</h1>
+                ),
                 notfound: <h1>Not Found</h1>,
                 default: <h1>Default</h1>,
                 error: <h1>Error</h1>,
@@ -55,7 +65,7 @@ export default function App({ path }: { path: string }) {
                     error: <h1>Error</h1>,
                   },
                 },
-              }
+              },
             },
           },
         },
@@ -77,7 +87,9 @@ export default function App({ path }: { path: string }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body>
-        <Route />
+        <RouterProvider initialPath={path}>
+          <Route />
+        </RouterProvider>
       </body>
     </html>
   );

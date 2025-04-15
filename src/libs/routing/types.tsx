@@ -1,10 +1,12 @@
-import { ReactNode } from "react";
+import { ReactNode, ComponentType } from "react";
+
+export interface RouteProps {
+  Outlet: () => ReactNode;
+  param?: Record<string, string>;
+}
 
 export type RouteConfig = {
-  layout: (props: {
-    Outlet: () => ReactNode;
-    param?: Record<string, string>;
-  }) => ReactNode;
+  layout: ComponentType<RouteProps>;
   notfound: React.ReactNode;
   default: React.ReactNode;
   error: React.ReactNode;

@@ -1,11 +1,10 @@
 import {
   ReactNode,
-  useMemo,
   Suspense,
-  isValidElement,
   useCallback,
+  createElement,
 } from "react";
-import { RouteConfig } from "./types";
+import { RouteConfig, RouteProps } from "./types";
 
 interface RenderContext {
   routeSegments: string[];
@@ -63,8 +62,10 @@ export const renderLayout = (
     return childLayout;
   }, [routeSegments, currentDepth]);
 
-  return config.layout({
+  const props: RouteProps = {
     Outlet: MemoizedOutlet,
     param: params,
-  });
+  };
+
+  return createElement(config.layout, props);
 };
