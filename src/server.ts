@@ -15,7 +15,7 @@ const app = new Elysia()
     return new Response(null, {});
   })
   .get("*", async (req) => {
-    const app = createElement(App, { data: req.params["*"] });
+    const app = createElement(App, { path: req.params["*"] });
 
     const stream = await renderToReadableStream(app, {
       bootstrapScripts: ["/public/client.js"],

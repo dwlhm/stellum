@@ -1,69 +1,56 @@
 // src/app.tsx
 
 import React from "react";
-import { Routes } from "./libs/route/routes";
-import { Outlet } from "./libs/route/outlet";
 import About from "./pages/about";
-import Name from "./pages/name";
+import { useRoute } from "./libs/routing/useRoute";
+import { Config } from "./libs/routing/types";
 
-const config = {
-  "/": {
-    layout: <h1>Home</h1>,
-  },
-  about: {
-    layout: (
-      <div>
-        <h1>About</h1>
-        <Outlet />
-      </div>
-    ),
-    child: {
-      dia: {
-        layout: (
-          <div>
-            <p>Dia</p>
-            <Outlet />
-          </div>
-        ),
+export default function App({ path }: { path: string }) {
+  const config: Config = {
+    route: {
+      "/": {
+        layout: () => <h1>Home</h1>,
+        notfound: <h1>Not Found</h1>,
+        default: <h1>Default</h1>,
+        error: <h1>Error</h1>,
+      },
+      about: {
+        layout: (props) => <About Outlet={props.Outlet} param={props.param} />,
+        notfound: <h1>Not Found</h1>,
+        default: <h1>Default</h1>,
+        error: <h1>Error</h1>,
         child: {
-          itu: {
-            layout: (
+          "*": {
+            layout: ({ Outlet, param }) => (
               <div>
-                <p>Itu</p>
+                <p>{JSON.stringify(param)}</p>
+                <h1>{param?.user + " account" || ""}</h1>
                 <Outlet />
               </div>
             ),
+            notfound: <h1>Not Found</h1>,
+            default: <h1>Default</h1>,
+            error: <h1>Error</h1>,
+            name: "user",
             child: {
-              istimewa: {
-                layout: (
-                  <div>
-                    <p>Istimewa</p>
-                  </div>
-                ),
+              logout: {
+                layout: () => <h1>Logout</h1>,
+                notfound: <h1>Not Found</h1>,
+                default: <h1>Default</h1>,
+                error: <h1>Error</h1>,
               },
             },
           },
         },
       },
-      ":": {
-        layout: <About />,
-        params: (param: string) => ({
-          id: Number(param),
-        }),
-        child: {
-          ":": {
-            layout: <Name />,
-            params: (param: string) => ({
-              name: param,
-            }),
-          },
-        },
-      },
     },
-  },
-};
+    notfound: <h1>Not Found</h1>,
+    default: <h1>Default</h1>,
+    error: <h1>Error</h1>,
+  };
 
-export default function App({ data }: { data: string }) {
+  const { Route } = useRoute(config, path);
+
   return (
     <html>
       <head>
@@ -73,7 +60,7 @@ export default function App({ data }: { data: string }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body>
-        <Routes initialConfig={config} initialParams={data} />
+        <Route />
       </body>
     </html>
   );

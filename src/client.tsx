@@ -4,4 +4,4 @@ import React from "react";
 import { hydrateRoot } from "react-dom/client";
 import App from "./app";
 
-hydrateRoot(document, <App data={window.location.pathname.replace("/", "")} />);
+hydrateRoot(document, <App path={window.location.pathname.replace("/", "")} />);
