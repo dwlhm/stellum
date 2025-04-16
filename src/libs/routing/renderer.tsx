@@ -1,15 +1,12 @@
-import {
-  ReactNode,
-  Suspense,
-  useCallback,
-  createElement,
-} from "react";
+import { ReactNode, Suspense, useCallback, createElement } from "react";
 import { RouteConfig, RouteProps } from "./types";
+import { normalizeMultiPathSegments } from "./useRoute";
 
 interface RenderContext {
   routeSegments: string[];
   currentDepth: number;
   params: Record<string, string>;
+  context: Record<string, unknown>;
 }
 
 // Helper untuk cek lazy component
@@ -22,8 +19,25 @@ const isLazyComponent = (component: any): boolean => {
 
 export const renderLayout = (
   config: RouteConfig,
-  { routeSegments, currentDepth, params }: RenderContext
+  { routeSegments, currentDepth, params, context }: RenderContext
 ): ReactNode => {
+  if (config.middleware) {
+    const { MiddlewareComponent, context: middlewareContext } =
+      config.middleware({
+        context,
+      });
+
+    if (MiddlewareComponent) {
+      const props = {
+        Outlet: () => <></>,
+        param: params,
+        context: { ...context, ...middlewareContext },
+      };
+      return createElement(MiddlewareComponent, props);
+    }
+
+    context = { ...context, ...middlewareContext };
+  }
   const currentSegment = routeSegments[currentDepth + 1] ?? "";
 
   const getChildLayout = (): ReactNode => {
@@ -31,18 +45,34 @@ export const renderLayout = (
       return null;
     }
 
-    const childConfig = config.child[currentSegment] ?? config.child["*"];
+    let childConfig = config.child[currentSegment] ?? config.child["*"];
 
     if (!childConfig) {
-      return config.notfound ?? <div>Not Found</div>;
+      const multiRoute = normalizeMultiPathSegments(
+        config.child,
+        routeSegments,
+        currentDepth + 1
+      );
+
+      childConfig = config.child[multiRoute ?? ""];
+
+      if (!childConfig) {
+        if (process.env.NODE_ENV !== "production") {
+          console.warn(
+            `No child route found for path: ${routeSegments.join("/")}`
+          );
+        }
+        return config.notfound ?? <div>Not Found</div>;
+      }
     }
 
     const layout = renderLayout(childConfig, {
       routeSegments,
       currentDepth: currentDepth + 1,
       params: childConfig.name
-      ? { ...params, [childConfig.name]: currentSegment }
-      : params,
+        ? { ...params, [childConfig.name]: currentSegment }
+        : params,
+      context,
     });
 
     // Cek apakah layout mengandung lazy component
@@ -65,6 +95,7 @@ export const renderLayout = (
   const props: RouteProps = {
     Outlet: MemoizedOutlet,
     param: params,
+    context,
   };
 
   return createElement(config.layout, props);

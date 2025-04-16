@@ -4,7 +4,6 @@ import React from "react";
 import { createRouter } from "./libs/routing/useRoute";
 import { Config } from "./libs/routing/types";
 import { Link } from "./libs/routing/link";
-import { RouterProvider } from "./libs/routing/context";
 
 export default function App({ path }: { path: string }) {
   const config: Config = {
@@ -21,6 +20,13 @@ export default function App({ path }: { path: string }) {
       about: {
         layout: React.lazy(() => import("./pages/about")),
         notfound: <h1>Not Found</h1>,
+        middleware: () => {
+          return {
+            context: {
+              hello: "hi",
+            },
+          };
+        },
         child: {
           "*": {
             layout: ({ Outlet, param }) => (
@@ -30,12 +36,22 @@ export default function App({ path }: { path: string }) {
                 <Outlet />
               </div>
             ),
+            middleware: () => {
+              return {
+                context: {
+                  name: "dwlhm",
+                },
+              };
+            },
             notfound: <h1>Not Found</h1>,
             name: "user",
             child: {
               logout: {
                 layout: (props) => (
-                  <h1>Logout: {JSON.stringify(props.param)}</h1>
+                  <h1>
+                    Logout: {JSON.stringify(props.param)} -{" "}
+                    {JSON.stringify(props.context)}
+                  </h1>
                 ),
                 notfound: <h1>Not Found</h1>,
               },
@@ -56,8 +72,31 @@ export default function App({ path }: { path: string }) {
           },
         },
       },
+      "berita/antara/news": {
+        layout: () => <h1>Berita Antara</h1>,
+        notfound: <h1>Not Found</h1>,
+      },
+      a: {
+        layout: ({ Outlet }) => (
+          <div>
+            <h1>A</h1>
+            <Outlet />
+          </div>
+        ),
+        middleware: () => {
+          return {
+            context: { hello: "hi" },
+          };
+        },
+        child: {
+          "b/c/d": {
+            layout: ({ context }) => <h1>B C D: {context?.hello as string}</h1>,
+          },
+        },
+      },
     },
     notfound: <h1>Not Found</h1>,
+    loading: <p>Loading...</p>,
   };
 
   const Route = createRouter(config, path);
@@ -71,9 +110,7 @@ export default function App({ path }: { path: string }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body>
-        <RouterProvider initialPath={path}>
-          <Route />
-        </RouterProvider>
+        <Route />
       </body>
     </html>
   );
