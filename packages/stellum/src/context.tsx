@@ -1,4 +1,10 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  type ReactNode,
+} from "react";
 
 interface RouterContextType {
   path: string;
@@ -6,11 +12,17 @@ interface RouterContextType {
 }
 
 const RouterContext = createContext<RouterContextType>({
-  path: '/',
+  path: "/",
   navigate: () => {},
 });
 
-export const RouterProvider = ({ children, initialPath }: { children: ReactNode, initialPath: string }) => {
+export const RouterProvider = ({
+  children,
+  initialPath,
+}: {
+  children: ReactNode;
+  initialPath: string;
+}) => {
   const [path, setPath] = useState(initialPath);
 
   useEffect(() => {
@@ -18,12 +30,12 @@ export const RouterProvider = ({ children, initialPath }: { children: ReactNode,
       setPath(window.location.pathname);
     };
 
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
   const navigate = (to: string) => {
-    window.history.pushState({}, '', to);
+    window.history.pushState({}, "", to);
     setPath(to);
   };
 

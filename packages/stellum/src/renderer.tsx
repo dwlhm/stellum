@@ -62,6 +62,15 @@ export const renderLayout = (
     context,
   };
 
+  // Cek apakah layout mengandung lazy component
+  if (isLazyComponent(config.layout)) {
+    return (
+      <Suspense fallback={config?.loading ?? <div>Loading...</div>}>
+        {createElement(config.layout, props)}
+      </Suspense>
+    );
+  }
+
   return createElement(config.layout, props);
 };
 
@@ -142,15 +151,6 @@ const ChildLayout = ({
     currentDepth: childDepth,
     ...mergedRouteContext,
   });
-
-  // Cek apakah layout mengandung lazy component
-  if (isLazyComponent(childConfig.layout)) {
-    return (
-      <Suspense fallback={childConfig?.loading ?? <div>Loading...</div>}>
-        {layout}
-      </Suspense>
-    );
-  }
 
   return layout;
 };

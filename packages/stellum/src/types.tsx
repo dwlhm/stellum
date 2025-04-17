@@ -1,4 +1,4 @@
-import { ReactNode, ComponentType, LazyExoticComponent } from "react";
+import type { ReactNode, LazyExoticComponent } from "react";
 
 export type Params = Record<string, string>;
 export type Context = Record<string, unknown>;
@@ -36,5 +36,5 @@ export type RouteConfig = {
 
 export type Config = {
   route: Record<string, RouteConfig>;
-  middleware?: (context: MiddlewareContext) =>LayoutFunction;
+  middleware?: (context: MiddlewareContext) => LayoutFunction;
 } & RouteLayoutOptions;

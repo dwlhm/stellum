@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { lazy, useState } from "react";
 import { createRouter } from "stellum";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
@@ -37,6 +37,19 @@ function App() {
               layout: ({ params }) => <div>Team: ${params?.user}</div>,
             },
           },
+        },
+        counter: {
+          layout: ({ Outlet }) => (
+            <div>
+              <p>Counter Page</p>
+              <Outlet />
+            </div>
+          ),
+          child: {
+            "page": {
+              layout: lazy(() => import("./counter")),
+            }
+          }
         },
       },
       notfound: <div>Not Found</div>,
