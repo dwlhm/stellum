@@ -29,10 +29,10 @@ export default function App({ path }: { path: string }) {
         },
         child: {
           "*": {
-            layout: ({ Outlet, param }) => (
+            layout: ({ Outlet, params }) => (
               <div>
-                <p>{JSON.stringify(param)}</p>
-                <h1>{param?.user + " account" || ""}</h1>
+                <p>{JSON.stringify(params)}</p>
+                <h1>{params?.user + " account" || ""}</h1>
                 <Outlet />
               </div>
             ),
@@ -49,7 +49,7 @@ export default function App({ path }: { path: string }) {
               logout: {
                 layout: (props) => (
                   <h1>
-                    Logout: {JSON.stringify(props.param)} -{" "}
+                    Logout: {JSON.stringify(props.params)} -{" "}
                     {JSON.stringify(props.context)}
                   </h1>
                 ),
@@ -57,7 +57,7 @@ export default function App({ path }: { path: string }) {
               },
               "*": {
                 layout: (props) => (
-                  <h1>Account kedua: {JSON.stringify(props.param)}</h1>
+                  <h1>Account kedua: {JSON.stringify(props.params)}</h1>
                 ),
                 notfound: <h1>Not Found</h1>,
                 name: "account",

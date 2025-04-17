@@ -1,43 +1,40 @@
-import { ReactNode, ComponentType } from "react";
-
-export interface RouteProps {
-  Outlet: () => ReactNode;
-  param?: Record<string, string>;
-  context?: Record<string, unknown>;
-}
-
-export type Middleware = (context: MiddlewareContext) => {
-  MiddlewareComponent?: ComponentType<RouteProps>;
-  context: Record<string, unknown>;
-};
+import { ReactNode, ComponentType, LazyExoticComponent } from "react";
 
 export type Params = Record<string, string>;
-
 export type Context = Record<string, unknown>;
-
-export type Segments = string[];
+export type LayoutFunction = (props: RouteProps) => ReactNode;
 
 export type RouteContext = {
-  params: Record<string, string>;
-  context: Record<string, unknown>;
-};
-
-export type RouteConfig = {
-  layout: ComponentType<RouteProps>;
-  notfound?: React.ReactNode;
-  loading?: React.ReactNode;
-  name?: string;
-  child?: Record<string, RouteConfig>;
-  middleware?: Middleware;
+  params: Params;
+  context: Context;
 };
 
 export type MiddlewareContext = {
   context: Record<string, unknown>;
 };
 
-export type Config = {
-  route: Record<string, RouteConfig>;
+export interface RouteProps extends Partial<RouteContext> {
+  Outlet: () => ReactNode;
+}
+
+export type Middleware = (context: MiddlewareContext) => {
+  MiddlewareComponent?: LayoutFunction;
+  context: Record<string, unknown>;
+};
+
+export type RouteLayoutOptions = {
   notfound: React.ReactNode;
   loading: React.ReactNode;
-  middleware?: (context: MiddlewareContext) => ComponentType<RouteProps>;
 };
+
+export type RouteConfig = {
+  layout: LayoutFunction | LazyExoticComponent<LayoutFunction>;
+  name?: string;
+  child?: Record<string, RouteConfig>;
+  middleware?: Middleware;
+} & Partial<RouteLayoutOptions>;
+
+export type Config = {
+  route: Record<string, RouteConfig>;
+  middleware?: (context: MiddlewareContext) =>LayoutFunction;
+} & RouteLayoutOptions;

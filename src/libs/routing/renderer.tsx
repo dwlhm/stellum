@@ -6,7 +6,6 @@ import {
   RouteConfig,
   RouteContext,
   RouteProps,
-  Segments,
 } from "./types";
 import { normalizeMultiPathSegments } from "./useRoute";
 
@@ -59,7 +58,7 @@ export const renderLayout = (
 
   const props: RouteProps = {
     Outlet: MemoizedOutlet,
-    param: params,
+    params: params,
     context,
   };
 
@@ -106,7 +105,7 @@ const ChildLayout = ({
   routeContext,
 }: {
   child: Record<string, RouteConfig>;
-  segments: Segments;
+  segments: string[];
   childDepth: number;
   notfound?: ReactNode;
   routeContext: RouteContext;
