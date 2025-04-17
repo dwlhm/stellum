@@ -1,28 +1,14 @@
 {
   "name": "try-elysia",
   "version": "1.0.50",
+  "private": true,
   "scripts": {
     "test": "jest",
     "dev": "bun run --watch src/server.ts",
     "test:watch": "jest --watch"
   },
-  "dependencies": {
-    "@elysiajs/static": "^1.2.0",
-    "elysia": "latest",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
-  },
-  "devDependencies": {
-    "@happy-dom/global-registrator": "^17.4.4",
-    "@testing-library/dom": "^10.4.0",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.2.0",
-    "@types/jest": "^29.5.14",
-    "@types/react": "^19.0.12",
-    "@types/react-dom": "^19.0.4",
-    "@vitejs/plugin-react": "^4.3.4",
-    "bun-types": "latest",
-    "vite": "^6.2.6"
-  },
-  "module": "src/index.js"
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ]
 }

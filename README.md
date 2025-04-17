@@ -7,8 +7,6 @@ A server-side rendering implementation using React, Elysia, and Bun runtime with
 - ⚡️ Server-side rendering with React
 - 🛠️ Built-in routing system with code splitting
 - 🔄 Lazy loading components
-- 📦 Zero-config bundling with Vite
-- 🚀 Fast refresh development experience
 
 ## Getting Started
 
