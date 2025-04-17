@@ -51,6 +51,10 @@ export const createRouter = (config: Config, initialPath: string) => {
       return renderLayout(rootRoute, {
         routeSegments: segments,
         currentDepth: 0,
+        defaultLayout: {
+          loading: config.loading ?? <p>Loading...</p>,
+          notfound: config.notfound ?? <p>Not Found!</p>,
+        },
         params: {},
         context: {},
       });

@@ -1,14 +1,34 @@
 {
   "name": "stellum",
-  "module": "index.ts",
+  "version": "0.1.0",
+  "description": "A lightweight router for React with SSR support",
   "type": "module",
-  "devDependencies": {
-    "@types/bun": "latest"
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "jest",
+    "prepublishOnly": "npm run build"
   },
   "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
     "typescript": "^5.0.0"
   },
-  "dependencies": {
-    "react": "^19.1.0"
+  "keywords": [
+    "react",
+    "router",
+    "ssr",
+    "routing"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/stellum"
   }
 }

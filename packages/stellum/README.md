@@ -1,15 +1,37 @@
-# stellum
+# Stellum
 
-To install dependencies:
+A lightweight router for React with SSR support.
 
+## Features
+- 🚀 SSR out of the box
+- 📦 Zero dependencies
+- 🔄 Code splitting support
+- 🛠️ Type-safe routing
+
+## Installation
 ```bash
-bun install
+npm install stellum
 ```
 
-To run:
+## Quick Start
+```tsx
+import { createRouter } from 'stellum';
 
-```bash
-bun run index.ts
-```
-
-This project was created using `bun init` in bun v1.1.38. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+const Router = createRouter({
+  route: {
+    "/": {
+      layout: HomePage,
+    },
+    "about": {
+      layout: AboutPage,
+      child: {
+        "*": {
+          layout: UserPage,
+          name: "userId"
+        }
+      }
+    }
+  },
+  notfound: <NotFound />,
+  loading: <Loading />
+}, initialPath);

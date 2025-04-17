@@ -5,6 +5,7 @@ import type {
   Params,
   RouteConfig,
   RouteContext,
+  RouteLayoutOptions,
   RouteProps,
 } from "./types";
 import { normalizeMultiPathSegments } from "./useRoute";
@@ -14,6 +15,7 @@ interface RenderContext {
   currentDepth: number;
   params: Record<string, string>;
   context: Record<string, unknown>;
+  defaultLayout: RouteLayoutOptions;
 }
 
 // Helper untuk cek lazy component
@@ -26,7 +28,7 @@ const isLazyComponent = (component: any): boolean => {
 
 export const renderLayout = (
   config: RouteConfig,
-  { routeSegments, currentDepth, params, context }: RenderContext
+  { routeSegments, currentDepth, params, context, defaultLayout }: RenderContext
 ): ReactNode => {
   const middlewareResult = executeMiddleware({
     middleware: config.middleware,
@@ -47,11 +49,12 @@ export const renderLayout = (
         child={config.child}
         segments={routeSegments}
         childDepth={currentDepth + 1}
-        notfound={config.notfound}
+        notfound={config.notfound ?? defaultLayout.notfound}
         routeContext={{
           params: params,
           context: context,
         }}
+        defaultLayout={defaultLayout}
       />
     ) : null;
   }, [routeSegments, currentDepth]);
@@ -65,7 +68,7 @@ export const renderLayout = (
   // Cek apakah layout mengandung lazy component
   if (isLazyComponent(config.layout)) {
     return (
-      <Suspense fallback={config?.loading ?? <div>Loading...</div>}>
+      <Suspense fallback={config?.loading ?? defaultLayout.loading}>
         {createElement(config.layout, props)}
       </Suspense>
     );
@@ -112,12 +115,14 @@ const ChildLayout = ({
   childDepth,
   notfound = <p>Not Found!</p>,
   routeContext,
+  defaultLayout,
 }: {
   child: Record<string, RouteConfig>;
   segments: string[];
   childDepth: number;
   notfound?: ReactNode;
   routeContext: RouteContext;
+  defaultLayout: RouteLayoutOptions;
 }) => {
   const currentSegment = segments[childDepth] ?? "";
   if (!currentSegment) {
@@ -149,6 +154,7 @@ const ChildLayout = ({
   const layout = renderLayout(childConfig, {
     routeSegments: segments,
     currentDepth: childDepth,
+    defaultLayout,
     ...mergedRouteContext,
   });
 

@@ -52,8 +52,8 @@ function App() {
           }
         },
       },
-      notfound: <div>Not Found</div>,
-      loading: <div>Loading...</div>,
+      notfound: <div>Gaada bolo</div>,
+      loading: <div>Memuat!</div>,
     },
     window.location.pathname
   );
