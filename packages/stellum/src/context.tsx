@@ -1,17 +1,19 @@
 import {
-  createContext,
   useContext,
   useState,
   useEffect,
   type ReactNode,
+  useCallback,
+  useMemo,
 } from "react";
+import { createContext, useContextSelector } from "use-context-selector";
 
 interface RouterContextType {
   path: string;
   navigate: (to: string) => void;
 }
 
-const RouterContext = createContext<RouterContextType>({
+export const RouterContext = createContext<RouterContextType>({
   path: "/",
   navigate: () => {},
 });
@@ -34,16 +36,28 @@ export const RouterProvider = ({
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
-  const navigate = (to: string) => {
+  const navigate = useCallback((to: string) => {
     window.history.pushState({}, "", to);
     setPath(to);
-  };
+  }, []);
+
+  const contextValue = useMemo(() => ({ path, navigate }), [path, navigate]);
 
   return (
-    <RouterContext.Provider value={{ path, navigate }}>
+    <RouterContext.Provider value={contextValue}>
       {children}
     </RouterContext.Provider>
   );
 };
 
-export const useRouter = () => useContext(RouterContext);
+export const useRouter = <T,>(selector: (context: RouterContextType) => T): T => {
+  // Use useContextSelector with the context created by use-context-selector
+  const context = useContextSelector(RouterContext, selector);
+
+  // Improved error handling if useRouter is used outside RouterProvider
+  if (context === undefined) {
+    throw new Error('useRouter must be used within a RouterProvider');
+  }
+
+  return context;
+};

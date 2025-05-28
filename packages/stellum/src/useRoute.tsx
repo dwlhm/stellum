@@ -36,7 +36,7 @@ export const normalizeMultiPathSegments = (
 
 export const createRouter = (config: Config, initialPath: string) => {
   const RouteComponent = (): ReactNode => {
-    const { path } = useRouter();
+    const path = useRouter(context => context.path);
     const segments = normalizePathSegments(path);
 
     let rootRoute = config.route[segments[0]];

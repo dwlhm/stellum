@@ -163,10 +163,32 @@ const ChildLayout = memo(({
 
   return layout;
 }, (prevProps, nextProps) => {
-  return prevProps.child === nextProps.child &&
-         prevProps.segments === nextProps.segments &&
-         prevProps.childDepth === nextProps.childDepth &&
-         prevProps.notfound === nextProps.notfound &&
-         JSON.stringify(prevProps.routeContext) === JSON.stringify(nextProps.routeContext) &&
-         prevProps.defaultLayout === nextProps.defaultLayout;
+  if (prevProps.child !== nextProps.child) return false;
+  if (prevProps.segments !== nextProps.segments) return false;
+  if (prevProps.childDepth !== nextProps.childDepth) return false;
+  if (prevProps.notfound !== nextProps.notfound) return false;  
+  if (prevProps.defaultLayout !== nextProps.defaultLayout) return false;
+  
+  const prevContext = prevProps.routeContext;
+  const nextContext = nextProps.routeContext;
+  
+  const prevParams = prevContext.params;
+  const nextParams = nextContext.params;
+  
+  if (Object.keys(prevParams).length !== Object.keys(nextParams).length) return false;
+  
+  for (const key in prevParams) {
+    if (prevParams[key] !== nextParams[key]) return false;
+  }
+  
+  const prevCtx = prevContext.context;
+  const nextCtx = nextContext.context;
+  
+  if (Object.keys(prevCtx).length !== Object.keys(nextCtx).length) return false;
+  
+  for (const key in prevCtx) {
+    if (prevCtx[key] !== nextCtx[key]) return false;
+  }
+  
+  return true;
 });
