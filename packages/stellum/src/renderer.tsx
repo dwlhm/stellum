@@ -40,7 +40,7 @@ export const renderLayout = (
   context = middlewareResult?.context ?? context;
 
   if (MiddlewareLayout) {
-    return createElement(() => MiddlewareLayout);
+    return MiddlewareLayout;
   }
 
   const MemoizedOutlet = useCallback(() => {

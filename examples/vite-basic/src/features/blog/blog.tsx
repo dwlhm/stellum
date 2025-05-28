@@ -1,6 +1,6 @@
-import { Link } from "stellum"
+import { LayoutFunction, Link } from "stellum"
 
-export const Blog = ({ Outlet }) => {
+export const Blog: LayoutFunction = ({ Outlet }) => {
   return(
     <div>
       <p>Ini blog</p>
@@ -15,7 +15,7 @@ export const Blog = ({ Outlet }) => {
   )
 }
 
-export const BlogCategory = ({ Outlet, params }) => {
+export const BlogCategory: LayoutFunction = ({ Outlet, params }) => {
   return(
     <div>
       <p>Category: {params?.category}</p>
@@ -31,7 +31,7 @@ export const BlogCategory = ({ Outlet, params }) => {
   )
 }
 
-export const BlogPost = ({ params }) => {
+export const BlogPost: LayoutFunction = ({ params }) => {
   return(
     <div>
       <p>Post: {params?.slug}</p>

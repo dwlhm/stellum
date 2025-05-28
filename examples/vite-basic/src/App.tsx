@@ -26,7 +26,7 @@ function App() {
             "*": {
               name: "user",
               layout: ({ params }) => <div>Team: ${params?.user}</div>,
-              middleware: ({ params }) => AboutMiddleware({ params }), 
+              middleware: AboutMiddleware, 
             },
           },
         },
@@ -35,11 +35,11 @@ function App() {
           child: {
             "*": {
               name: "category",
-              layout: ({ params, Outlet }) => <BlogCategory params={params} Outlet={Outlet} />,
+              layout: BlogCategory,
               child: {
                 "*": {
                   name: "slug",
-                  layout: ({ params }) => <BlogPost params={params} />,
+                  layout: BlogPost,
                 },
               },
             },
