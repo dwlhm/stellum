@@ -3,6 +3,13 @@ import type { Config, RouteConfig } from "./types";
 import { renderLayout } from "./renderer";
 import { RouterProvider, useRouter } from "./context";
 
+export const normalizePath = (path: string): string => {
+  if (path[0] === '/') {
+    return path.substring(1)
+  }
+  return path
+}
+
 const normalizePathSegments = (path: string): string[] => {
   const segments = path.split("/").filter(Boolean);
   return segments.length ? segments : ["/"];

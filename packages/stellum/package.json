@@ -3,15 +3,22 @@
   "version": "0.1.0",
   "description": "A lightweight router for React with SSR support",
   "type": "module",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "files": [
     "dist",
     "README.md"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsup ./src/index.ts --format esm,cjs --dts",
     "test": "jest",
     "prepublishOnly": "npm run build"
   },
@@ -30,5 +37,10 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/yourusername/stellum"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.19",
+    "@types/react": "^19.1.4",
+    "tsup": "^8.5.0"
   }
 }

@@ -10,6 +10,7 @@ export type RouteContext = {
 };
 
 export type MiddlewareContext = {
+  params?: Params;
   context: Record<string, unknown>;
 };
 

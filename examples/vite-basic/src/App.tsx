@@ -1,41 +1,47 @@
-import { lazy, useState } from "react";
+import { lazy } from "react";
 import { createRouter } from "stellum";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
-import { Counter } from "./counter"
+import HomePage from "./features/home/components/HomePage.tsx"
+import AboutPage from "./features/about/components/AboutPage.tsx"
+import { AboutMiddleware } from "./features/about/components/AboutMiddleware.tsx"
+import { Blog, BlogCategory, BlogPost } from "./features/blog/blog.tsx"
 
 function App() {
-  const [count, setCount] = useState(0);
 
   const Router = createRouter(
     {
       route: {
         "/": {
-          layout: () => <div>Home<Counter /></div>,
-          child: {
-            "/about": {
-              layout: () => <div>About</div>,
-            },
-          },
+          layout: HomePage,
         },
         about: {
-          layout: ({ Outlet }) => (
-            <div>
-              <h1>About Page</h1>
-              <Outlet />
-            </div>
-          ),
+          layout: AboutPage,
           child: {
-            "/team": {
-              layout: () => <div>Team</div>,
+            "/team/dwlhm": {
+              layout: () => <div>Team/dwlhm</div>,
             },
-            "/company": {
+            "company": {
               layout: () => <div>Company</div>,
             },
             "*": {
               name: "user",
               layout: ({ params }) => <div>Team: ${params?.user}</div>,
+              middleware: ({ params }) => AboutMiddleware({ params }), 
+            },
+          },
+        },
+        blog: {
+          layout: Blog,
+          child: {
+            "*": {
+              name: "category",
+              layout: ({ params, Outlet }) => <BlogCategory params={params} Outlet={Outlet} />,
+              child: {
+                "*": {
+                  name: "slug",
+                  layout: ({ params }) => <BlogPost params={params} />,
+                },
+              },
             },
           },
         },

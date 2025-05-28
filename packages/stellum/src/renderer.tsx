@@ -1,4 +1,4 @@
-import { type ReactNode, Suspense, useCallback, createElement } from "react";
+import { type ReactNode, Suspense, useCallback, createElement, memo } from "react";
 import type {
   Context,
   Middleware,
@@ -8,7 +8,7 @@ import type {
   RouteLayoutOptions,
   RouteProps,
 } from "./types";
-import { normalizeMultiPathSegments } from "./useRoute";
+import { normalizeMultiPathSegments, normalizePath } from "./useRoute";
 
 interface RenderContext {
   routeSegments: string[];
@@ -88,6 +88,7 @@ const executeMiddleware = ({
 }) => {
   if (!middleware) return null;
   const { MiddlewareComponent, context: middlewareContext } = middleware({
+    params,
     context,
   });
 
@@ -109,7 +110,7 @@ const executeMiddleware = ({
   };
 };
 
-const ChildLayout = ({
+const ChildLayout = memo(({
   child,
   segments,
   childDepth,
@@ -124,17 +125,19 @@ const ChildLayout = ({
   routeContext: RouteContext;
   defaultLayout: RouteLayoutOptions;
 }) => {
-  const currentSegment = segments[childDepth] ?? "";
-  if (!currentSegment) {
+  const currentPath = segments[childDepth] ?? "";
+  if (!currentPath) {
     return null;
   }
 
-  let childConfig = child[currentSegment] ?? child["*"];
+  const currentSegment = normalizePath(currentPath)
+
+  let childConfig = child[currentSegment]
 
   if (!childConfig) {
     const multiRoute = normalizeMultiPathSegments(child, segments, childDepth);
 
-    childConfig = child[multiRoute ?? ""];
+    childConfig = child[multiRoute ?? "*"];
 
     if (!childConfig) {
       if (process.env.NODE_ENV !== "production") {
@@ -159,4 +162,11 @@ const ChildLayout = ({
   });
 
   return layout;
-};
+}, (prevProps, nextProps) => {
+  return prevProps.child === nextProps.child &&
+         prevProps.segments === nextProps.segments &&
+         prevProps.childDepth === nextProps.childDepth &&
+         prevProps.notfound === nextProps.notfound &&
+         JSON.stringify(prevProps.routeContext) === JSON.stringify(nextProps.routeContext) &&
+         prevProps.defaultLayout === nextProps.defaultLayout;
+});
