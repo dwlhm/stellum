@@ -1,6 +1,6 @@
 import { Link } from 'stellum'
 
-export default function AboutPage({ Outlet }) {
+export default function AboutPage({ Outlet }: { Outlet: React.ComponentType }) {
   return(
     <div>
       <p>About Page</p>

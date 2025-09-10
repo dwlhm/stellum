@@ -1,6 +1,6 @@
 import { Link } from 'stellum';
 
-export default function HomePage({ Outlet }) {
+export default function HomePage() {
   return(
     <div>
       <p>Hello World!</p>

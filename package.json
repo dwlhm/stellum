@@ -1,9 +1,12 @@
 {
-  "name": "try-elysia",
+  "name": "stellum",
   "version": "1.0.50",
   "private": true,
-  "workspaces": [
-    "packages/*",
-    "examples/*"
-  ]
+  "scripts": {
+    "dev": "pnpm run --parallel --filter stellum dev --filter vite-project dev",
+    "build": "pnpm run -r build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
 }

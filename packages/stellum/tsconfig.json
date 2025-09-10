@@ -3,13 +3,17 @@
     "jsx": "react-jsx",
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
     "declaration": true,
     "declarationMap": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "rootDir": "src",
+    "composite": true
   },
-  "include": ["src"]
+  "include": ["src/**/*"],
+  "exclude": ["dist", "node_modules"]
 }
