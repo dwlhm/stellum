@@ -1,5 +1,5 @@
-import { lazy } from "react";
 import { createRouter } from "stellum";
+import type { RouteProps } from "stellum";
 import "./App.css";
 import HomePage from "./features/home/components/HomePage.tsx"
 import AboutPage from "./features/about/components/AboutPage.tsx"
@@ -25,8 +25,8 @@ function App() {
             },
             "*": {
               name: "user",
-              layout: ({ params }) => <div>Team: ${params?.user}</div>,
-              middleware: AboutMiddleware, 
+              layout: ({ params }: RouteProps) => <div>Team: {params?.user}</div>,
+              middleware: AboutMiddleware,
             },
           },
         },
@@ -46,7 +46,7 @@ function App() {
           },
         },
         counter: {
-          layout: ({ Outlet }) => (
+          layout: ({ Outlet }: RouteProps) => (
             <div>
               <p>Counter Page</p>
               <Outlet />
@@ -54,7 +54,7 @@ function App() {
           ),
           child: {
             "page": {
-              layout: lazy(() => import("./counter")),
+              lazyLayout: () => import("./counter"),
             }
           }
         },

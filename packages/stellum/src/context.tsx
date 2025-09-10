@@ -1,5 +1,4 @@
 import {
-  useContext,
   useState,
   useEffect,
   type ReactNode,
@@ -28,6 +27,8 @@ export const RouterProvider = ({
   const [path, setPath] = useState(initialPath);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     const handlePopState = () => {
       setPath(window.location.pathname);
     };
@@ -37,7 +38,9 @@ export const RouterProvider = ({
   }, []);
 
   const navigate = useCallback((to: string) => {
-    window.history.pushState({}, "", to);
+    if (typeof window !== "undefined") {
+      window.history.pushState({}, "", to);
+    }
     setPath(to);
   }, []);
 

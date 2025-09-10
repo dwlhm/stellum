@@ -28,8 +28,22 @@ export type RouteLayoutOptions = {
   loading: React.ReactNode;
 };
 
+export type LazyLayoutFunction = () => Promise<{ default: LayoutFunction }>;
+
+// Support multiple lazy properties like React Router v6
+export type LazyRouteModule = {
+  Component?: LayoutFunction;
+  default?: LayoutFunction;
+  loader?: any;
+  action?: any;
+  ErrorBoundary?: React.ComponentType;
+};
+
+export type LazyRouteFunction = () => Promise<LazyRouteModule>;
+
 export type RouteConfig = {
-  layout: LayoutFunction | LazyExoticComponent<LayoutFunction>;
+  layout?: LayoutFunction;           // Regular layout component
+  lazyLayout?: LazyRouteFunction;   // Lazy layout component (replaces layout)
   name?: string;
   child?: Record<string, RouteConfig>;
   middleware?: Middleware;

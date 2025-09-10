@@ -1,4 +1,4 @@
-import { type ReactNode, Suspense, useCallback, createElement, memo } from "react";
+import { type ReactNode, Suspense, useCallback, createElement, memo, lazy } from "react";
 import type {
   Context,
   Middleware,
@@ -18,14 +18,6 @@ interface RenderContext {
   defaultLayout: RouteLayoutOptions;
 }
 
-// Helper untuk cek lazy component
-const isLazyComponent = (component: any): boolean => {
-  return (
-    typeof component?.$$typeof === "symbol" &&
-    component.$$typeof.toString() === "Symbol(react.lazy)"
-  );
-};
-
 export const renderLayout = (
   config: RouteConfig,
   { routeSegments, currentDepth, params, context, defaultLayout }: RenderContext
@@ -36,11 +28,11 @@ export const renderLayout = (
     context,
   });
 
-  const MiddlewareLayout = middlewareResult?.Layout ?? null;
-  context = middlewareResult?.context ?? context;
+  const middlewareLayoutElement = middlewareResult?.Layout ?? null;
+  const effectiveContext = middlewareResult?.context ?? context;
 
-  if (MiddlewareLayout) {
-    return MiddlewareLayout;
+  if (middlewareLayoutElement) {
+    return middlewareLayoutElement;
   }
 
   const MemoizedOutlet = useCallback(() => {
@@ -52,26 +44,44 @@ export const renderLayout = (
         notfound={config.notfound ?? defaultLayout.notfound}
         routeContext={{
           params: params,
-          context: context,
+          context: effectiveContext,
         }}
         defaultLayout={defaultLayout}
       />
     ) : null;
-  }, [routeSegments, currentDepth]);
+  }, [config.child, routeSegments, currentDepth, config.notfound, defaultLayout, params, effectiveContext]);
 
   const props: RouteProps = {
     Outlet: MemoizedOutlet,
     params: params,
-    context,
+    context: effectiveContext,
   };
 
-  // Cek apakah layout mengandung lazy component
-  if (isLazyComponent(config.layout)) {
+  // Handle lazy layout (takes precedence over regular layout)
+  if (config.lazyLayout) {
+    const LazyLayoutComponent = lazy(async () => {
+      const module = await config.lazyLayout!();
+      // Support multiple export patterns like React Router v6
+      const Component = module.Component || module.default;
+      
+      if (!Component) {
+        throw new Error('Lazy layout must export either Component or default');
+      }
+      
+      return { default: Component };
+    });
+    
     return (
       <Suspense fallback={config?.loading ?? defaultLayout.loading}>
-        {createElement(config.layout, props)}
+        {createElement(LazyLayoutComponent, props)}
       </Suspense>
     );
+  }
+
+  // Handle regular layout
+  if (!config.layout) {
+    console.warn('Route config must have either layout or lazyLayout property');
+    return defaultLayout.notfound;
   }
 
   return createElement(config.layout, props);
@@ -96,7 +106,7 @@ const executeMiddleware = ({
 
   const props = {
     Outlet: () => <></>,
-    param: params,
+    params: params,
     context: mergedContext,
   };
 
