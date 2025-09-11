@@ -16,6 +16,7 @@ export const Blog: LayoutFunction = ({ Outlet }) => {
 }
 
 export const BlogCategory: LayoutFunction = ({ Outlet, params }) => {
+  console.log("re-mount: blog category")
   return(
     <div>
       <p>Category: {params?.category}</p>
@@ -32,6 +33,7 @@ export const BlogCategory: LayoutFunction = ({ Outlet, params }) => {
 }
 
 export const BlogPost: LayoutFunction = ({ params }) => {
+  console.log("re-mount: blog post")
   return(
     <div>
       <p>Post: {params?.slug}</p>

@@ -21,11 +21,17 @@ function App() {
               layout: () => <div>Team/dwlhm</div>,
             },
             "company": {
-              layout: () => <div>Company</div>,
+              layout: () => {
+                console.log("re-mount: company")
+                return(<div>Company</div>);
+              },
             },
             "*": {
               name: "user",
-              layout: ({ params }: RouteProps) => <div>Team: {params?.user}</div>,
+              layout: ({ params }: RouteProps) => {
+                console.log("re-mount: user")
+                return(<div>Team: {params?.user}</div>);
+              },
               middleware: AboutMiddleware,
             },
           },
